@@ -19,6 +19,10 @@ Route::post('/short_urls', [ShortUrlController::class , 'store'])
 ->name('short_urls.store');
 
 
+Route::get('/{code}', [ShortUrlController::class, 'redirect'])
+    ->name('short_urls.redirect');
+
+
 
 });
 
