@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Elequent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 
@@ -13,7 +13,7 @@ protected $fillable = [
     'name',
 ];
 
-public function user(): HasMany {
+public function users(): HasMany {
 
 return $this->hasMany(User::class);
 
@@ -21,5 +21,3 @@ return $this->hasMany(User::class);
 
 }
 
-
-?>
