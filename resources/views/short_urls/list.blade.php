@@ -23,7 +23,6 @@
 
     <br><br>
 
-    {{-- Success Message --}}
     @if (session('success'))
 
         <p>
@@ -42,6 +41,8 @@
         <tr>
 
             <th>ID</th>
+
+            <th>Company Name</th>
 
             <th>Original URL</th>
 
@@ -62,6 +63,12 @@
                 <td>
 
                     {{ $shortUrl->id }}
+
+                </td>
+
+                <td>
+
+                    {{ $shortUrl->user->company->name ?? 'No Company' }}
 
                 </td>
 
@@ -115,7 +122,7 @@
 
             <tr>
 
-                <td colspan="6">
+                <td colspan="7">
 
                     No short URLs found.
 

@@ -15,7 +15,7 @@ class ShortUrlPolicy
 
     public function create(User $user): bool
     {
-        return ! $user->hasRole('SuperAdmin');
+        return ! $user->hasRole('superadmin');
     }
     
 
@@ -24,9 +24,9 @@ class ShortUrlPolicy
 
     return $user->hasAnyRole([
     
-    'SuperAdmin',
-    'Sales',
-    'Manager'
+    'superadmin',
+    'sales',
+    'manager'
 
     ]);
 
@@ -35,13 +35,13 @@ class ShortUrlPolicy
 
      public function viewCompany(User $user): bool
     {
-        return $user->hasRole('Admin');
+        return $user->hasRole('admin');
     }
 
 
     public function viewOwn(User $user) : bool {
       
-    return $user->hasRole('Member');
+    return $user->hasRole('member');
 
     }
 

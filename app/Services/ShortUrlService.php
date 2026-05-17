@@ -37,28 +37,34 @@ class ShortUrlService
     }
 
     public function getAccessibleShortUrls(User $user)
-    {
-        if ($user->can('viewAll', ShortUrl::class)) {
+{
+    if ($user->can('viewAll', ShortUrl::class)) {
 
-            return ShortUrl::latest()->get();
-        }
+        return ShortUrl::with('user')
+            ->latest()
+            ->get();
+    }
 
-        if ($user->can('viewCompany', ShortUrl::class)) {
+    if ($user->can('viewCompany', ShortUrl::class)) {
 
-            return ShortUrl::whereHas('user', function ($query) use ($user) {
+        return ShortUrl::with('user')
+            ->whereHas('user', function ($query) use ($user) {
 
                 $query->where('company_id', $user->company_id);
 
-            })->latest()->get();
-        }
-
-        if ($user->can('viewOwn', ShortUrl::class)) {
-
-            return ShortUrl::where('user_id', $user->id)
-                ->latest()
-                ->get();
-        }
-
-        return collect();
+            })
+            ->latest()
+            ->get();
     }
+
+    if ($user->can('viewOwn', ShortUrl::class)) {
+
+        return ShortUrl::with('user')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
+    }
+
+    return collect();
+}
 }
