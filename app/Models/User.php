@@ -37,12 +37,17 @@ class User extends Authenticatable
     }
 
 
-    
+
 
 public function company(): BelongsTo{
 
 return $this->belongsTo(Company::class);
 
+}
+
+
+public function shortUrls(){
+    return $this->hasmany(shortUrls::class);
 }
 
 
