@@ -56,6 +56,8 @@ class ShortUrlController extends Controller
             );
     }
 
+
+
 public function redirect($code)
 {
     $shortUrl = ShortUrl::where(
@@ -65,5 +67,7 @@ public function redirect($code)
 
     return redirect($shortUrl->original_url);
 }
+
+
 
 }
