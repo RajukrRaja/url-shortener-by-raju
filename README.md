@@ -1,245 +1,397 @@
-Here's the improved \`README.md\` file you can copy and paste directly:
+#  URL Shortener Service
 
-\`\`\`markdown
+A modern, secure, and role-based URL shortening platform built using Laravel.
+This project demonstrates clean architecture, scalable backend practices, authentication, authorization, database relationships, service-oriented design, and role-based access control used in real production applications.
 
-\# 🔗 URL Shortener Service
+---
 
-A \*\*role-based URL shortening service\*\* built with Laravel. This project demonstrates authentication, authorization, database relationships, and a clean service-oriented architecture.
 
-\---
+---
 
-\## 📋 The Problem We're Solving
+#  Development Journey (Commit History)
 
-Companies need internal URL shorteners where different roles have different permissions. Not everyone should create short links, and people should only see what they're supposed to see.
+This project was built incrementally using structured commits.
 
-\---
+| Commit                                                                                                        | Description                                           |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `first commitment by raju`                                                                                    | Initial Laravel setup and project initialization      |
+| `Setup database configuration and improve README`                                                             | Database setup improvements and documentation updates |
+| `Implement authentication and role management`                                                                | Added authentication and role system                  |
+| `Add company relationship to users`                                                                           | Introduced company-user relationships                 |
+| `Add company relationship and super admin seeder`                                                             | Added super admin setup and database constraints      |
+| `Define routes for short url module`                                                                          | Implemented URL module routes                         |
+| `Add policy rules for short url permissions`                                                                  | Added authorization policies                          |
+| `Implement short url service layer`                                                                           | Moved business logic into services                    |
+| `Refactor short URL module using services, policies, Eloquent relationships, and dedicated list/create views` | Major architecture refactor                           |
+| `Add invitation system and role-based authorization`                                                          | Added invitation flow and advanced authorization      |
 
-\## 👥 User Roles & Permissions
+---
 
-| Role | Create Short URLs | View Short URLs |
+#  Project Overview
 
-|------|------------------|-----------------|
+Organizations often need an internal URL shortening system where access must be controlled carefully.
 
-| \*\*SuperAdmin\*\* | ❌ No | ❌ Cannot see any |
+Different employees have different responsibilities:
 
-| \*\*Admin\*\* | ❌ No | ✅ Only URLs from OTHER companies |
+* Some users should only view links
+* Some should create and manage links
+* Some should only access company-specific data
+* Sensitive data should never be visible to everyone
 
-| \*\*Member\*\* | ❌ No | ✅ Only URLs created by OTHERS |
+This project solves that problem using:
 
-| \*\*Sales\*\* | ✅ Yes | ✅ All URLs in their company |
+* Role-based permissions
+* Company-level data isolation
+* Policy-driven authorization
+* Service layer architecture
+* Secure authentication flow
 
-| \*\*Manager\*\* | ✅ Yes | ✅ All URLs in their company |
+The application ensures users only access resources they are authorized to use.
 
-\---
 
-\## 🏗️ How It Works
 
-\- Each company has multiple users
+---
 
-\- Short URLs belong to both a user and a company
+#  Key Features
 
-\- Authentication required to access any short URL
+## Authentication System
 
-\- Users can only access short URLs from their own company
+* Secure login & registration
+* Session-based authentication
+* Protected routes using middleware
+* User-company association
+* Role-based access restrictions
 
-\- Role-based policies control \*\*Create\*\* and \*\*View\*\* permissions
+---
 
-\---
+## 👥 Advanced Role Management
 
-\## 🚀 Quick Start Guide
+The system contains multiple user roles with different permissions.
 
-\### What You'll Need
+| Role           | Create URLs | View URLs | Access Scope           |
+| -------------- | ----------- | --------- | ---------------------- |
+| **SuperAdmin** | No            | Yes     | Global access          |
+| **Admin**      | Yes           | Yes     | Other companies only   |
+| **Member**     | Yes           | Yes     | URLs created by others |
 
-\- PHP 8.1 or higher
 
-\- Composer
+This permission structure is implemented using Laravel Policies for clean authorization handling.
 
-\- MySQL or SQLite
+---
 
-\### Step-by-Step Setup
+#  Multi-Company Architecture
 
-\`\`\`bash
+The application supports multiple companies.
 
-\# 1. Get the code
+Each company:
 
+* Has multiple users
+* Owns its own short URLs
+* Maintains isolated data visibility
+* Restricts unauthorized cross-company access
+
+This architecture simulates how real SaaS products manage tenants securely.
+
+---
+
+#  Architecture & Design Principles
+
+The project follows clean backend engineering practices.
+
+##  Service Layer Pattern
+
+Business logic is separated from controllers using dedicated service classes.
+
+Example:
+
+* URL generation logic
+* Slug uniqueness checks
+* Validation handling
+* Company mapping
+* Click tracking
+
+All handled inside:
+
+```bash
+app/Services/ShortUrlService.php
+```
+
+This keeps controllers lightweight and maintainable.
+
+---
+
+##  Policy-Based Authorization
+
+Authorization is handled using Laravel Policies.
+
+Benefits:
+
+* Centralized permission management
+* Clean controller code
+* Scalable role logic
+* Easy testing & maintenance
+
+Implemented inside:
+
+```bash
+app/Policies/ShortUrlPolicy.php
+```
+
+---
+
+##  Eloquent Relationships
+
+The project uses proper database relationships:
+
+* Company → hasMany Users
+* User → belongsTo Company
+* User → hasMany ShortUrls
+* ShortUrl → belongsTo User
+* ShortUrl → belongsTo Company
+
+This enables optimized queries and scalable data handling.
+
+---
+
+#  Installation Guide
+
+##  Requirements
+
+Before setup, ensure the following are installed:
+
+* PHP 8.1+
+* Composer
+* MySQL or SQLite
+* Node.js (optional for frontend assets)
+
+---
+
+#  Quick Setup
+
+```bash
+# Clone repository
 git clone https://github.com/RajukrRaja/url-shortener-by-raju.git
 
+# Enter project directory
 cd url-shortener-by-raju
 
-\# 2. Install dependencies
-
+# Install dependencies
 composer install
 
-\# 3. Set up environment
-
+# Create environment file
 cp .env.example .env
 
+# Generate application key
 php artisan key:generate
+```
 
-\# 4. Choose your database
+---
 
-\# For MySQL (update .env file):
+#  Database Configuration
 
-\# DB\_CONNECTION=mysql
+## MySQL Setup
 
-\# DB\_DATABASE=your\_db
+Update `.env`
 
-\# DB\_USERNAME=root
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=url_shortener
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-\# DB\_PASSWORD=
+---
 
-\# For SQLite (simpler, no setup needed):
+---
 
-\# DB\_CONNECTION=sqlite
+## Db download instruction
 
-\# touch database/database.sqlite
+Database SQL file is available on GitHub inside:
 
-\# 5. Run migrations and seeders
+```txt id="e5x9q2"
+database_sql_url_shortner/url_shortener_raju.sql
+```
 
+### Steps
+
+1. Open the SQL file from the repository.
+2. Click on **Raw**.
+3. Press `Ctrl + S` to download the file.
+
+### Import Database
+
+1. Start Apache and MySQL from XAMPP.
+2. Open:
+
+```txt id="u7k3m1"
+http://localhost/phpmyadmin
+```
+
+3. Create database:
+
+```sql id="r4n8p6"
+CREATE DATABASE url_shortener_raju;
+```
+
+4. Import:
+
+```txt id="q2v5x9"
+url_shortener_raju.sql
+```
+
+---
+
+
+#  Run Migrations & Seeders
+
+```bash
 php artisan migrate
 
 php artisan db:seed
+```
 
-\# 6. Start the server
+This automatically creates:
 
+* Roles
+* Companies
+* Demo users
+* Sample permissions
+
+---
+
+# Start Development Server
+
+```bash
 php artisan serve
+```
 
-\`\`\`
+Application will run on:
 
-\---
+```bash
+http://127.0.0.1:8000
+```
 
-\## 📝 Build Process – Complete Commit History
+---
 
-This project was built incrementally. Below is the \*\*complete commit history\*\* showing how each feature was added:
+#  Demo User Accounts
 
-| Commit | Description |
+After seeding the database:
 
-|--------|-------------|
+| Email                                                   | Password | Role       |
+| ------------------------------------------------------- | -------- | ---------- |
+| [superadmin@example.com](mailto:superadmin@example.com) | password | SuperAdmin |
+| [admin@example.com](mailto:admin@example.com)           | password | Admin      |
+| [member@example.com](mailto:member@example.com)         | password | Member     |
 
-| \`first commitment by raju\` | Initial project setup with Laravel installation, basic configurations, and directory structure |
 
-| \`Setup database configuration and improve README\` | Configured database connections (MySQL/SQLite support), improved documentation |
+These accounts help test authorization behavior quickly.
 
-| \`Implement authentication and role management\` | Added Laravel authentication, created role system with migrations for \`roles\` table, added login/registration with role assignment |
+---
 
-| \`Add company relationship to users\` | Created \`companies\` table, established belongs-to relationship between users and companies, updated seeders with sample companies |
+# Important Project Structure
 
-| \`Add company relationship and super admin seeder\` | Added foreign key constraints, created SuperAdmin seeder with default credentials, ensured data integrity |
-
-| \`Define routes for short url module\` | Created RESTful routes for short URLs: index, create, store, show, redirect, delete |
-
-| \`Add policy rules for short url permissions\` | Implemented Laravel Policies for each role (SuperAdmin, Admin, Member, Sales, Manager), defined \`create()\` and \`view()\` permission logic |
-
-| \`Implement short url service layer\` | Created \`ShortUrlService\` class handling: unique slug generation, URL validation, click tracking, company assignment logic |
-
-| \`Refactor short URL module using services, policies, Eloquent relationships, and dedicated list/create views\` | Major refactor: moved business logic from controllers to services, integrated policies with controllers, created dedicated Blade views for listing and creating URLs, optimized queries with eager loading |
-
-| \`Add invitation system and role-based authorization\` | Implemented user invitation system (email invites), invited users auto-assigned to correct company, invitation links expire after 48 hours, role-based dashboard views |
-
-\---
-
-\## 📂 Project Structure Highlights
-
-\`\`\`
-
+```bash
 app/
-
 ├── Http/
-
-│ ├── Controllers/
-
-│ │ ├── ShortUrlController.php
-
-│ │ └── InvitationController.php
-
-│ ├── Policies/
-
-│ │ └── ShortUrlPolicy.php
-
-│ └── Middleware/
+│   ├── Controllers/
+│   │   ├── ShortUrlController.php
+│   │   └── InvitationController.php
+│   │
+│   ├── Policies/
+│   │   └── ShortUrlPolicy.php
+│   │
+│   └── Middleware/
 
 ├── Models/
-
-│ ├── User.php
-
-│ ├── Company.php
-
-│ ├── ShortUrl.php
-
-│ └── Invitation.php
+│   ├── User.php
+│   ├── Company.php
+│   ├── ShortUrl.php
+│   └── Invitation.php
 
 ├── Services/
+│   └── ShortUrlService.php
 
-│ └── ShortUrlService.php
+database/
+├── migrations/
+└── seeders/
+```
 
-└── Database/
 
-├── Migrations/
 
-└── Seeders/
+#  Technology Stack
 
-\`\`\`
+| Category       | Technology                 |
+| -------------- | -------------------------- |
+| Backend        | PHP                        |
+| Framework      | Laravel 10/11              |
+| Database       | MySQL / SQLite             |
+| ORM            | Eloquent                   |
+| Authentication | Laravel Breeze / Jetstream |
+| Authorization  | Laravel Policies           |
+| Frontend       | Blade + TailwindCSS        |
 
-\---
+---
 
-\## 🧪 Testing the Roles
+#  Security Considerations
 
-After running \`php artisan db:seed\`, test users are created:
+The application includes several backend security practices:
 
-| Email | Password | Role | Can Create | Can View |
+* Route protection using middleware
+* Role-based authorization
+* Company-level access isolation
+* URL ownership validation
+* Expiring invitation links
+* Secure password hashing
+* CSRF protection
 
-|-------|----------|------|------------|----------|
+---
 
-| superadmin@example.com | password | SuperAdmin | ❌ | ❌ (none) |
+#  Scalability Improvements Possible
 
-| admin@example.com | password | Admin | ❌ | ✅ (other companies) |
+Future upgrades can include:
 
-| member@example.com | password | Member | ❌ | ✅ (others' URLs) |
+* REST API support
+* QR code generation
+* Click analytics dashboard
+* Custom aliases/slugs
+* URL expiration handling
+* Redis caching
+* Queue jobs
+* Rate limiting
+* Audit logs
+* Activity tracking
+* Team collaboration modules
 
-| sales@example.com | password | Sales | ✅ | ✅ (own company) |
+---
 
-| manager@example.com | password | Manager | ✅ | ✅ (own company) |
+#  Learning Outcomes
 
-\---
+This project demonstrates practical understanding of:
 
-\## 🛠️ Tech Stack
+* MVC architecture
+* Clean code practices
+* Service-oriented backend design
+* Database normalization
+* Authentication systems
+* Authorization using policies
+* Multi-tenant application structure
+* Scalable Laravel development
 
-\- \*\*Backend:\*\* Laravel 10/11
+Perfect for backend developer technical evaluations and portfolio projects.
 
-\- \*\*Database:\*\* MySQL / SQLite
+---
 
-\- \*\*Authentication:\*\* Laravel Breeze / Jetstream
+# License
 
-\- \*\*Authorization:\*\* Laravel Policies
+This project was created for educational and technical assignment purposes.
 
-\- \*\*Frontend:\*\* Blade + TailwindCSS
+---
 
-\---
+# Author
 
-\## 📌 Future Improvements
+Built with dedication by **Raju Kumar Raja**
 
-\- \[ \] API endpoints for programmatic URL shortening
+A backend-focused project designed to showcase real-world Laravel architecture, scalable coding practices, and production-ready authorization systems.
 
-\- \[ \] QR code generation for each short URL
-
-\- \[ \] Click analytics dashboard with charts
-
-\- \[ \] Custom slug support for premium roles
-
-\- \[ \] URL expiration dates
-
-\- \[ \] Bulk URL import/export
-
-\---
-
-\## 📄 License
-
-This project is for technical assignment purposes.
-
-\---
-
-\*\*Built with ❤️ by Raju\*\*
-
-\*Follow the commit history to see the evolution from setup to completion\*
-
-\`\`\`
